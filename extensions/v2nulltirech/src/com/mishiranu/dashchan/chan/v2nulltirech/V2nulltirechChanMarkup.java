@@ -1,4 +1,4 @@
-package com.mishiranu.dashchan.chan.moechannel;
+package com.mishiranu.dashchan.chan.v2nulltirech;
 
 import android.util.Pair;
 import chan.content.ChanMarkup;
@@ -6,22 +6,20 @@ import chan.text.CommentEditor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MoechannelChanMarkup extends ChanMarkup {
-	private static final int SUPPORTED_TAGS = TAG_BOLD | TAG_ITALIC | TAG_UNDERLINE | TAG_OVERLINE | TAG_STRIKE
-			| TAG_SUBSCRIPT | TAG_SUPERSCRIPT | TAG_SPOILER | TAG_CODE;
+public class V2nulltirechChanMarkup extends ChanMarkup {
+	private static final int SUPPORTED_TAGS = TAG_BOLD | TAG_ITALIC | TAG_UNDERLINE | TAG_STRIKE | TAG_SPOILER
+			| TAG_CODE;
 
-	public MoechannelChanMarkup() {
+	public V2nulltirechChanMarkup() {
 		addTag("b", TAG_BOLD);
 		addTag("i", TAG_ITALIC);
-		addTag("sub", TAG_SUBSCRIPT);
-		addTag("sup", TAG_SUPERSCRIPT);
-		addTag("code", TAG_CODE);
+		addTag("strike", TAG_STRIKE);
+		addTag("pre", TAG_CODE);
 		addTag("span", "unkfunc", TAG_QUOTE);
 		addTag("span", "spoiler", TAG_SPOILER);
-		addTag("div", "textwall", TAG_SPOILER);
-		addTag("span", "s", TAG_STRIKE);
-		addTag("span", "u", TAG_UNDERLINE);
-		addTag("span", "o", TAG_OVERLINE);
+		addTag("span", "style", "border-bottom: 1px solid", TAG_UNDERLINE);
+		addTag("span", "style", "font-family: Mona,'MS PGothic' !important;", TAG_CODE);
+		addBlock("pre", true, false); // Remove spacing
 	}
 
 	@Override
@@ -39,6 +37,9 @@ public class MoechannelChanMarkup extends ChanMarkup {
 	@Override
 	public Pair<String, String> obtainPostLinkThreadPostNumbers(String uriString) {
 		Matcher matcher = THREAD_LINK.matcher(uriString);
-		return matcher.find() ? new Pair<>(matcher.group(1), matcher.group(2)) : null;
+		if (matcher.find()) {
+			return new Pair<>(matcher.group(1), matcher.group(2));
+		}
+		return null;
 	}
 }
