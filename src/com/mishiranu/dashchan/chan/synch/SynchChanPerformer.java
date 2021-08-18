@@ -8,7 +8,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.net.Uri;
-import android.util.Log;
 import android.util.Pair;
 
 import chan.content.ApiException;
@@ -178,7 +177,7 @@ public class SynchChanPerformer extends ChanPerformer {
 		String responseText = new HttpRequest(contentUri, data.holder).read().getString();
 		try {
 			AntispamFieldsParser.parseAndApply(responseText, entity, "board", "thread", "name", "email",
-					"subject", "body", "password", "file", "spoiler", "json_response");
+					"subject", "body", "password", "file", "spoiler", "json_response", "user_icon");
 		} catch (ParseException e) {
 			throw new InvalidResponseException();
 		}

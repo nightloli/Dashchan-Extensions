@@ -15,9 +15,9 @@ public class SynchChanLocator extends ChanLocator {
 	private static final String HOST_CDN = "cdn.syn-ch.org";
 
 	public SynchChanLocator() {
-		addChanHost("syn-ch.com");
-		addChanHost("syn-ch.com.ua");
 		addChanHost("syn-ch.org");
+		addChanHost("syn-ch.com.ua");
+		addChanHost("syn-ch.com");
 		addChanHost("синч.рф");
 		addConvertableChanHost("syn-ch.ru");
 		addSpecialChanHost(HOST_CDN);
