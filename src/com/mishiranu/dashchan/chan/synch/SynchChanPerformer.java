@@ -1,17 +1,21 @@
 package com.mishiranu.dashchan.chan.synch;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.net.Uri;
+import android.util.Log;
+import android.util.Pair;
 
 import chan.content.ApiException;
 import chan.content.ChanLocator;
 import chan.content.ChanPerformer;
 import chan.content.InvalidResponseException;
+import chan.content.model.Icon;
 import chan.content.model.Post;
 import chan.content.model.Posts;
 import chan.http.HttpException;
@@ -24,6 +28,9 @@ import chan.util.CommonUtils;
 import chan.util.StringUtils;
 
 public class SynchChanPerformer extends ChanPerformer {
+
+	private final String[] iconsNoUrl = {"shizik", "suiseiseki", "souseiseki", "gosdep", "bnet", "isaac", "anon"};
+
 	private static final HttpRequest.RedirectHandler NOT_FOUND_REDIRECT_HANDLER =
 			(responseCode, requestedUri, redirectedUri, holder) -> {
 		if (redirectedUri.toString().contains("/arch/")) {
@@ -86,6 +93,8 @@ public class SynchChanPerformer extends ChanPerformer {
 		Uri uri = locator.buildPath(data.boardName, "res", data.threadNumber + ".json");
 		JSONObject jsonObject = new HttpRequest(uri, data.holder, data).setValidator(data.validator)
 				.setRedirectHandler(NOT_FOUND_REDIRECT_HANDLER).read().getJsonObject();
+		Uri uriIcons = locator.buildPath(data.boardName, "res", data.threadNumber + ".html");
+		String responseText = new HttpRequest(uriIcons, data).setValidator(data.validator).setRedirectHandler(NOT_FOUND_REDIRECT_HANDLER).read().getString();
 		if (jsonObject != null) {
 			try {
 				JSONArray jsonArray = jsonObject.getJSONArray("posts");
@@ -93,6 +102,17 @@ public class SynchChanPerformer extends ChanPerformer {
 					Post[] posts = new Post[jsonArray.length()];
 					for (int i = 0; i < posts.length; i++) {
 						posts[i] = SynchModelMapper.createPost(jsonArray.getJSONObject(i), locator, data.boardName);
+						Pair<String, String> icon = new SynchPostsParser(responseText, posts[i].getPostNumber()).convertSinglePost();
+						if(icon != null ){
+							if(Arrays.asList(iconsNoUrl).contains(icon.first)) {
+								posts[i].setIcons(new Icon(locator, Uri.parse("chan:///res/raw/" + icon.first), icon.second));
+							}
+							else {
+								posts[i].setIcons(new Icon(locator, Uri.parse("https://static.syn-ch.com/flags/b/" + icon.first + ".png"), icon.second));
+							}
+						} else{
+							posts[i].setIcons();
+						}
 					}
 					return new ReadPostsResult(posts);
 				}
@@ -150,6 +170,7 @@ public class SynchChanPerformer extends ChanPerformer {
 			}
 		}
 		entity.add("json_response", "1");
+		entity.add("user_flag", data.userIcon);
 
 		SynchChanLocator locator = ChanLocator.get(this);
 		Uri contentUri = data.threadNumber != null ? locator.createThreadUri(data.boardName, data.threadNumber)

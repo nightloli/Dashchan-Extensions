@@ -17,6 +17,7 @@ import chan.content.model.FileAttachment;
 import chan.content.model.Icon;
 import chan.content.model.Post;
 import chan.content.model.Posts;
+import chan.http.HttpRequest;
 import chan.util.CommonUtils;
 import chan.util.StringUtils;
 
@@ -38,7 +39,7 @@ public class SynchModelMapper {
 		FileAttachment attachment = new FileAttachment();
 		String tim = CommonUtils.getJsonString(jsonObject, "tim");
 		String filename = CommonUtils.getJsonString(jsonObject, "filename");
-		String ext = CommonUtils.getJsonString(jsonObject, "ext");
+		String ext = CommonUtils.getJsonString(jsonObject, "ext").toLowerCase();
 		String thumb = CommonUtils.getJsonString(jsonObject, "thumb");
 		attachment.setSize(jsonObject.optInt("fsize"));
 		attachment.setWidth(jsonObject.optInt("h"));
@@ -102,6 +103,8 @@ public class SynchModelMapper {
 		if (com != null) {
 			// Vichan JSON API bug, sometimes comment is broken
 			com = com.replace("<a  ", "<a ").replaceAll("href=\"\\?", "href=\"");
+			com = com.replace("class=\"public_ban\"", "style=\"color: red\"");
+			com = com.replace("class=\"irony\"", "style=\"color: #FF00FF\"");
 			post.setComment(com);
 		}
 		ArrayList<Attachment> attachments = null;
