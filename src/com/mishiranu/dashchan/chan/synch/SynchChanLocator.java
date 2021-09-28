@@ -12,16 +12,16 @@ public class SynchChanLocator extends ChanLocator {
 	private static final Pattern THREAD_PATH = Pattern.compile("/\\w+/res/(\\d+)\\.html");
 	private static final Pattern ATTACHMENT_PATH = Pattern.compile("/src/\\d+/\\d+/\\d+/\\w+\\.\\w+");
 
-	private static final String HOST_CDN = "cdn.syn-ch.org";
+	private static final String HOST_CDN = "cdn.syn-ch.com.ua";
 
 	public SynchChanLocator() {
-		addChanHost("syn-ch.org");
 		addChanHost("syn-ch.com.ua");
+		addChanHost("syn-ch.org");
 		addChanHost("syn-ch.com");
 		addChanHost("синч.рф");
 		addConvertableChanHost("syn-ch.ru");
 		addSpecialChanHost(HOST_CDN);
-		addSpecialChanHost("cdn.syn-ch.com.ua");
+		addSpecialChanHost("cdn.syn-ch.org");
 		addSpecialChanHost("cdn.syn-ch.com");
 		setHttpsMode(HttpsMode.CONFIGURABLE);
 	}

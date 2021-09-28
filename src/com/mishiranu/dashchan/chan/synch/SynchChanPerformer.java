@@ -2,13 +2,14 @@ package com.mishiranu.dashchan.chan.synch;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.net.Uri;
-import android.util.Pair;
 
 import chan.content.ApiException;
 import chan.content.ChanLocator;
@@ -26,9 +27,10 @@ import chan.text.ParseException;
 import chan.util.CommonUtils;
 import chan.util.StringUtils;
 
+
 public class SynchChanPerformer extends ChanPerformer {
 
-	private final String[] iconsNoUrl = {"shizik", "suiseiseki", "souseiseki", "gosdep", "bnet", "isaac", "anon"};
+	//private final String[] iconsNoUrl = {"shizik", "suiseiseki", "souseiseki", "gosdep", "bnet", "isaac", "anon"};
 
 	private static final HttpRequest.RedirectHandler NOT_FOUND_REDIRECT_HANDLER =
 			(responseCode, requestedUri, redirectedUri, holder) -> {
@@ -101,17 +103,18 @@ public class SynchChanPerformer extends ChanPerformer {
 					Post[] posts = new Post[jsonArray.length()];
 					for (int i = 0; i < posts.length; i++) {
 						posts[i] = SynchModelMapper.createPost(jsonArray.getJSONObject(i), locator, data.boardName);
-						Pair<String, String> icon = new SynchPostsParser(responseText, posts[i].getPostNumber()).convertSinglePost();
-						if(icon != null ){
-							if(Arrays.asList(iconsNoUrl).contains(icon.first)) {
-								posts[i].setIcons(new Icon(locator, Uri.parse("chan:///res/raw/" + icon.first), icon.second));
+						/*
+						final Pattern FLAG = Pattern.compile("<label for=\"delete_" + posts[i].getPostNumber() + "\">(((?!<label for=\"delete_).)*)<span class=\"flag flag-(.*?)\"(.*?)title=\"(.*?)\" ></span>(.*?)</label>");
+						Matcher matcher = FLAG.matcher(responseText);
+						if(matcher.find() ){
+							if(Arrays.asList(iconsNoUrl).contains(matcher.group(3))) {
+								posts[i].setIcons(new Icon(locator, Uri.parse("chan:///res/raw/" + matcher.group(3)), StringUtils.unescapeHtml(matcher.group(5))));
 							}
 							else {
-								posts[i].setIcons(new Icon(locator, Uri.parse("https://static.syn-ch.com/flags/b/" + icon.first + ".png"), icon.second));
+								posts[i].setIcons(new Icon(locator, Uri.parse("https://static.syn-ch.com/flags/b/" + matcher.group(3) + ".png"), StringUtils.unescapeHtml(matcher.group(5))));
 							}
-						} else{
-							posts[i].setIcons();
 						}
+						 */
 					}
 					return new ReadPostsResult(posts);
 				}
